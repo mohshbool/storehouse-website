@@ -6,9 +6,9 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
+import LineChart from "../Components/LineChart";
 
 const MainPage = () => {
   return (
@@ -38,7 +38,7 @@ const MainPage = () => {
         <Toolbar />
         <Box sx={{ overflow: "auto" }}>
           <List>
-            {["Users", "Products", "Categories"].map((text, index) => (
+            {["Users", "Products", "Categories"].map((text) => (
               <ListItem button key={text}>
                 <ListItemText primary={text} />
               </ListItem>
@@ -46,6 +46,10 @@ const MainPage = () => {
           </List>
         </Box>
       </Drawer>
+      <Box sx={{ flexGrow: 1, pl: 32, pt: 10, pr: 2 }}>
+        <LineChart />
+        <LineChart />
+      </Box>
     </React.Fragment>
   );
 };
