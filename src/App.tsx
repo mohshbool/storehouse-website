@@ -2,7 +2,8 @@ import React from "react";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import LoginContainer from "./Containers/Login";
-import styled, { createGlobalStyle } from "styled-components";
+import { createGlobalStyle } from "styled-components";
+import SignupContainer from "./Containers/Signup";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <GlobalStyle />
       <Routes>
         <Route path="/" element={<LoginContainer />} />
+        <Route path="/register" element={<SignupContainer />} />
       </Routes>
     </>
   );

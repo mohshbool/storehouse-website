@@ -2,12 +2,13 @@ import React from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import styled from "styled-components";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { AuthContainer } from "./Login";
 import { useNavigate } from "react-router-dom";
 
 const validationSchema = yup.object({
+  name: yup.string().min(3, "Name too short").required("Name required"),
   email: yup
     .string()
     .email("Enter a valid email")
@@ -18,11 +19,12 @@ const validationSchema = yup.object({
     .required("Password is required"),
 });
 
-const LoginContainer = () => {
+const SignupContainer = () => {
   const navigate = useNavigate();
   const { values, touched, errors, handleChange, handleBlur, handleSubmit } =
     useFormik({
       initialValues: {
+        name: "",
         email: "",
         password: "",
       },
@@ -48,6 +50,17 @@ const LoginContainer = () => {
         autoComplete="off"
         onSubmit={handleSubmit}
       >
+        <TextField
+          id="name"
+          name="name"
+          label="Name"
+          variant="outlined"
+          value={values.name}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.name && Boolean(errors.name)}
+          helperText={touched.name && errors.name}
+        />
         <TextField
           id="email"
           name="email"
@@ -79,11 +92,11 @@ const LoginContainer = () => {
             marginTop: 3,
           }}
         >
-          <Button variant="text" onClick={() => navigate("register")}>
-            Sign up
+          <Button variant="text" onClick={() => navigate("/")}>
+            Login
           </Button>
           <Button variant="contained" type="submit">
-            Login
+            Sign up
           </Button>
         </Box>
       </Box>
@@ -91,13 +104,4 @@ const LoginContainer = () => {
   );
 };
 
-export const AuthContainer = styled.div`
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-
-export default LoginContainer;
+export default SignupContainer;
