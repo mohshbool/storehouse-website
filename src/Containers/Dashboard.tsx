@@ -50,7 +50,7 @@ const Dashboard = () => {
         </Box>
       </Drawer>
       <Box sx={{ flexGrow: 1, pl: 32, pt: 10, pr: 2 }}>
-        {pathname === "/" ? <MainPage /> : <Table />}
+        {pathname === "/" ? <MainPage /> : <Table type={"users"} />}
       </Box>
     </React.Fragment>
   );

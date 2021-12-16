@@ -1,27 +1,6 @@
 import React from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
-const columns: GridColDef[] = [
-  {
-    field: "name",
-    headerName: "Name",
-    minWidth: 200,
-    editable: true,
-  },
-  {
-    field: "email",
-    headerName: "E-mail",
-    minWidth: 250,
-    editable: true,
-  },
-  {
-    field: "created_date",
-    headerName: "Created Date",
-    minWidth: 110,
-    editable: true,
-  },
-];
-
 const rows = [
   {
     id: 1,
@@ -80,12 +59,87 @@ const rows = [
 ];
 
 interface TableProps {
-  labels?: string[];
-  data?: number[];
-  title?: string;
-  lineColor?: string;
+  type: "products" | "users" | "categories";
 }
 const Table = (props: TableProps) => {
+  let columns: GridColDef[];
+  console.log(props.type);
+  if (props.type === "products") {
+    columns = [
+      {
+        field: "name",
+        headerName: "Name",
+        minWidth: 200,
+        editable: true,
+      },
+      {
+        field: "description",
+        headerName: "Description",
+        minWidth: 250,
+        editable: true,
+      },
+      {
+        field: "quantity",
+        headerName: "Quantity",
+        type: "number",
+        minWidth: 250,
+        editable: true,
+      },
+      {
+        field: "price",
+        headerName: "Price",
+        type: "number",
+        minWidth: 250,
+        editable: true,
+      },
+      {
+        field: "created_date",
+        headerName: "Created Date",
+        type: "date",
+        minWidth: 110,
+        editable: true,
+      },
+    ];
+  } else if (props.type === "users") {
+    columns = [
+      {
+        field: "name",
+        headerName: "Name",
+        minWidth: 200,
+        editable: true,
+      },
+      {
+        field: "email",
+        headerName: "E-mail",
+        minWidth: 250,
+        editable: true,
+      },
+      {
+        field: "created_date",
+        headerName: "Created Date",
+        type: "date",
+        minWidth: 110,
+        editable: true,
+      },
+    ];
+  } else {
+    columns = [
+      {
+        field: "name",
+        headerName: "Name",
+        minWidth: 200,
+        editable: true,
+      },
+      {
+        field: "created_date",
+        headerName: "Created Date",
+        minWidth: 110,
+        type: "date",
+        editable: true,
+      },
+    ];
+  }
+
   return (
     <div style={{ height: 400, width: "100%" }}>
       <DataGrid
