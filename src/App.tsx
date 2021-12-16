@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import LoginContainer from "./Containers/Login";
 import { createGlobalStyle } from "styled-components";
 import SignupContainer from "./Containers/Signup";
-import MainPage from "./Containers/MainPage";
+import Dashboard from "./Containers/Dashboard";
 
 function App() {
   const signedIn = true;
@@ -14,7 +14,7 @@ function App() {
       <Routes>
         {signedIn ? (
           <React.Fragment>
-            <Route path="/" element={<MainPage />} />
+            <Route path="/*" element={<Dashboard />} />
           </React.Fragment>
         ) : (
           <React.Fragment>
