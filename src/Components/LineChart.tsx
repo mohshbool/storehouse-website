@@ -36,16 +36,17 @@ interface LineChartProps {
   labels?: string[];
   data?: number[];
   title?: string;
+  lineColor?: string;
 }
 const LineChart = (props: LineChartProps) => {
   const data = {
     labels: props.labels || mlabels,
     datasets: [
       {
-        label: props.title || "Products",
-        data: props.data || mdata,
-        borderColor: "rgb(255, 99, 132)",
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        label: props?.title || "Products",
+        data: props?.data || mdata,
+        borderColor: props?.lineColor || "rgb(255, 99, 132)",
+        backgroundColor: props?.lineColor || "rgba(255, 99, 132, 1)",
       },
     ],
   };

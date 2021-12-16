@@ -47,8 +47,9 @@ const MainPage = () => {
         </Box>
       </Drawer>
       <Box sx={{ flexGrow: 1, pl: 32, pt: 10, pr: 2 }}>
-        <LineChart />
-        <LineChart />
+        <LineChart title={"Users"} />
+        <LineChart title={"Products"} />
+        <LineChart title={"Categories"} />
       </Box>
     </React.Fragment>
   );
