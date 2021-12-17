@@ -18,7 +18,6 @@ export interface UserReducer {
   email?: string;
   password?: string;
   icon?: Upload;
-  deleted?: boolean;
   created_at?: Date;
   updated_at?: Date;
 }
