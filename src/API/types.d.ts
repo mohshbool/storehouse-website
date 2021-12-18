@@ -22,6 +22,7 @@ export class User {
   name: string;
   email: string;
   password: string;
+  token?: string;
   updated_at?: Date;
   created_at: Date;
 }
