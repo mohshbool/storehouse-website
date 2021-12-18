@@ -59,7 +59,7 @@ const rows = [
 ];
 
 interface TableProps {
-  type: "products" | "users" | "categories";
+  type: "products" | "users" | "categories" | string;
 }
 const Table = (props: TableProps) => {
   let columns: GridColDef[];

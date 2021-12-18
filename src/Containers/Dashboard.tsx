@@ -9,15 +9,14 @@ import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-import { useLocation } from "react-router-dom";
 import MainPage from "./MainPage";
 import Table from "../Components/Table";
 import { useDispatch } from "react-redux";
 import { updateConfigs, setUser } from "../Action";
 
 const Dashboard = () => {
-  const { pathname } = useLocation();
   const dispatch = useDispatch();
+  const [page, setPage] = React.useState("main");
   return (
     <React.Fragment>
       <CssBaseline />
@@ -26,9 +25,20 @@ const Dashboard = () => {
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
         <Toolbar sx={{ justifyContent: "space-between" }}>
-          <Typography variant="h6" noWrap component="div">
-            Sager Storehouse
-          </Typography>
+          <Button
+            variant="text"
+            sx={{ textTransform: "initial" }}
+            onClick={() => setPage("main")}
+          >
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ color: "white" }}
+            >
+              Sager Storehouse
+            </Typography>
+          </Button>
           <Button
             sx={{ color: "white" }}
             variant="text"
@@ -55,16 +65,20 @@ const Dashboard = () => {
         <Toolbar />
         <Box sx={{ overflow: "auto" }}>
           <List>
-            {["Users", "Products", "Categories"].map((text) => (
-              <ListItem button key={text}>
-                <ListItemText primary={text} />
+            {[
+              { key: "users", label: "Users" },
+              { key: "products", label: "Products" },
+              { key: "categories", label: "Categories" },
+            ].map(({ key, label }) => (
+              <ListItem button key={label} onClick={() => setPage(key)}>
+                <ListItemText primary={label} />
               </ListItem>
             ))}
           </List>
         </Box>
       </Drawer>
       <Box sx={{ flexGrow: 1, pl: 32, pt: 10, pr: 2 }}>
-        {pathname === "/" ? <MainPage /> : <Table type={"users"} />}
+        {page === "main" ? <MainPage /> : <Table type={page} />}
       </Box>
     </React.Fragment>
   );
