@@ -2,10 +2,9 @@ import React from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
+import LoadingButton from "@mui/lab/LoadingButton";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
-
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { AuthContainer } from "./Login";
@@ -30,6 +29,7 @@ const validationSchema = yup.object({
 const SignupContainer = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [errMsg, setErrMsg] = React.useState("");
   const { values, touched, errors, handleChange, handleBlur, handleSubmit } =
@@ -41,7 +41,7 @@ const SignupContainer = () => {
       },
       validationSchema: validationSchema,
       onSubmit: (values) => {
-        console.log(values);
+        setLoading(true);
         apiRequest<User>({
           url: "/user/create",
           method: "POST",
@@ -56,6 +56,7 @@ const SignupContainer = () => {
             console.log(error.response);
             setErrMsg(error.response.data.message);
             setOpen(true);
+            setLoading(false);
           });
       },
     });
@@ -135,9 +136,9 @@ const SignupContainer = () => {
             <Button variant="text" onClick={() => navigate("/")}>
               Login
             </Button>
-            <Button variant="contained" type="submit">
+            <LoadingButton loading={loading} variant="contained" type="submit">
               Sign up
-            </Button>
+            </LoadingButton>
           </Box>
         </Box>
       </AuthContainer>
