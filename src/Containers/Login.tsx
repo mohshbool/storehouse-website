@@ -6,6 +6,13 @@ import styled from "styled-components";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
+import Alert from "@mui/material/Alert";
+import LoadingButton from "@mui/lab/LoadingButton";
+import Snackbar from "@mui/material/Snackbar";
+import { useDispatch } from "react-redux";
+import { updateConfigs, setUser } from "../Action";
+import { apiRequest } from "../API";
+import { User } from "../API/types";
 
 const validationSchema = yup.object({
   email: yup
@@ -20,6 +27,10 @@ const validationSchema = yup.object({
 
 const LoginContainer = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [loading, setLoading] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [errMsg, setErrMsg] = React.useState("");
   const { values, touched, errors, handleChange, handleBlur, handleSubmit } =
     useFormik({
       initialValues: {
@@ -28,66 +39,96 @@ const LoginContainer = () => {
       },
       validationSchema: validationSchema,
       onSubmit: (values) => {
-        alert(JSON.stringify(values, null, 2));
+        setLoading(true);
+        apiRequest<User>({
+          url: "/user/login",
+          method: "POST",
+          data: values,
+        })
+          .then((res) => {
+            dispatch(updateConfigs({ signedIn: true }));
+            dispatch(setUser(res));
+          })
+          .catch((error) => {
+            console.log(error.response);
+            setErrMsg(error.response.data.message);
+            setOpen(true);
+            setLoading(false);
+          });
       },
     });
 
   return (
-    <AuthContainer>
-      <Box
-        component="form"
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          "& .MuiTextField-root": {
-            m: 1,
-            width: "25ch",
-          },
-        }}
-        noValidate
-        autoComplete="off"
-        onSubmit={handleSubmit}
+    <React.Fragment>
+      <Snackbar
+        open={open}
+        autoHideDuration={4500}
+        onClose={() => setOpen(false)}
       >
-        <TextField
-          id="email"
-          name="email"
-          label="E-mail"
-          variant="outlined"
-          value={values.email}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={touched.email && Boolean(errors.email)}
-          helperText={touched.email && errors.email}
-        />
-        <TextField
-          id="password"
-          name="password"
-          label="Password"
-          type="password"
-          variant="outlined"
-          value={values.password}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={touched.password && Boolean(errors.password)}
-          helperText={touched.password && errors.password}
-        />
+        <Alert
+          onClose={() => setOpen(false)}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {errMsg}
+        </Alert>
+      </Snackbar>
+      <AuthContainer>
         <Box
+          component="form"
           sx={{
             display: "flex",
-            justifyContent: "space-between",
-            marginX: 1,
-            marginTop: 3,
+            flexDirection: "column",
+            "& .MuiTextField-root": {
+              m: 1,
+              width: "25ch",
+            },
           }}
+          noValidate
+          autoComplete="off"
+          onSubmit={handleSubmit}
         >
-          <Button variant="text" onClick={() => navigate("register")}>
-            Sign up
-          </Button>
-          <Button variant="contained" type="submit">
-            Login
-          </Button>
+          <TextField
+            id="email"
+            name="email"
+            label="E-mail"
+            variant="outlined"
+            value={values.email}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched.email && Boolean(errors.email)}
+            helperText={touched.email && errors.email}
+          />
+          <TextField
+            id="password"
+            name="password"
+            label="Password"
+            type="password"
+            variant="outlined"
+            value={values.password}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched.password && Boolean(errors.password)}
+            helperText={touched.password && errors.password}
+          />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginX: 1,
+              marginTop: 3,
+            }}
+          >
+            <Button variant="text" onClick={() => navigate("register")}>
+              Sign up
+            </Button>
+            <LoadingButton loading={loading} variant="contained" type="submit">
+              Login
+            </LoadingButton>
+          </Box>
         </Box>
-      </Box>
-    </AuthContainer>
+      </AuthContainer>
+    </React.Fragment>
   );
 };
 
