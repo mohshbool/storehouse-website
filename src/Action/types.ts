@@ -18,6 +18,7 @@ export interface UserReducer {
   email?: string;
   password?: string;
   icon?: Upload;
+  token?: string;
   created_at?: Date;
   updated_at?: Date;
 }

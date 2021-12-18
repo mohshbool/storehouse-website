@@ -46,6 +46,7 @@ const LoginContainer = () => {
           data: values,
         })
           .then((res) => {
+            console.log(res);
             dispatch(updateConfigs({ signedIn: true }));
             dispatch(setUser(res));
           })
