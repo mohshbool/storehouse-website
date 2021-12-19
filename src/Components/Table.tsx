@@ -9,6 +9,11 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 import Modal from "@mui/material/Modal";
+import InputLabel from "@mui/material/InputLabel";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import Chip from "@mui/material/Chip";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -33,7 +38,7 @@ const productValidationSchema = yup.object({
   name: yup.string().min(3, "Name too short").required("Name required"),
   description: yup
     .string()
-    .min(15, "Description too short")
+    .min(5, "Description too short")
     .required("Description is required"),
   quantity: yup.number().min(1).required("Quantity is required"),
   price: yup.number().min(0).required("Price is required"),
@@ -54,6 +59,10 @@ const Table = (props: TableProps) => {
   const [variant, setVariant] = React.useState<"error" | "success">("error");
   const [data, setData] = React.useState<User[] | Product[] | Category[]>();
   const [dataLoading, setDataLoading] = React.useState(false);
+  const [categoriesData, setCategoriesData] = React.useState<Category[]>();
+  const [selectedCategories, setSelectedCategories] = React.useState<string[]>(
+    []
+  );
   const { token } = useSelector<RootState>(
     (state) => state.User
   ) as UserReducer;
@@ -62,7 +71,7 @@ const Table = (props: TableProps) => {
       {
         field: "name",
         headerName: "Name",
-        minWidth: 200,
+        minWidth: 150,
         editable: true,
       },
       {
@@ -75,21 +84,23 @@ const Table = (props: TableProps) => {
         field: "quantity",
         headerName: "Quantity",
         type: "number",
-        minWidth: 250,
+        minWidth: 10,
         editable: true,
       },
       {
         field: "price",
         headerName: "Price",
         type: "number",
-        minWidth: 250,
+        minWidth: 10,
         editable: true,
       },
       {
-        field: "created_date",
+        field: "created_at",
         headerName: "Created Date",
         type: "date",
         minWidth: 110,
+        valueGetter: (params) =>
+          new Date(params.row.created_at).toLocaleDateString(),
         editable: true,
       },
     ];
@@ -108,10 +119,12 @@ const Table = (props: TableProps) => {
         editable: true,
       },
       {
-        field: "created_date",
+        field: "created_at",
         headerName: "Created Date",
         type: "date",
         minWidth: 110,
+        valueGetter: (params) =>
+          new Date(params.row.created_at).toLocaleDateString(),
         editable: true,
       },
     ];
@@ -124,10 +137,12 @@ const Table = (props: TableProps) => {
         editable: true,
       },
       {
-        field: "created_date",
+        field: "created_at",
         headerName: "Created Date",
-        minWidth: 110,
         type: "date",
+        minWidth: 110,
+        valueGetter: (params) =>
+          new Date(params.row.created_at).toLocaleDateString(),
         editable: true,
       },
     ];
@@ -149,6 +164,7 @@ const Table = (props: TableProps) => {
       .then((res) => {
         setData(res);
         setDataLoading(false);
+        console.log(res);
       })
       .catch((error) => {
         setVariant("error");
@@ -156,6 +172,27 @@ const Table = (props: TableProps) => {
         setOpen(true);
         setDataLoading(false);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.type]);
+
+  React.useEffect(() => {
+    if (props.type === "products") {
+      apiRequest<Category[]>({
+        url: `/category/all`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => {
+          setCategoriesData(res);
+          console.log(res);
+        })
+        .catch((error) => {
+          setVariant("error");
+          setMsg(error.response.data.message);
+          setOpen(true);
+        });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.type]);
 
@@ -189,11 +226,20 @@ const Table = (props: TableProps) => {
         apiRequest<User>({
           url: `/${typeForServer}/create`,
           method: "POST",
-          data: values,
+          data:
+            props.type === "products"
+              ? { ...values, categories: selectedCategories }
+              : values,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
           .then((res) => {
             setMsg(`${res.name} has been created`);
             setVariant("success");
+            setOpen(true);
+            setLoading(false);
+            setModalOpen(false);
           })
           .catch((error) => {
             setVariant("error");
@@ -368,6 +414,48 @@ const Table = (props: TableProps) => {
                   error={touched.price && Boolean(errors.price)}
                   helperText={touched.price && errors.price}
                 />
+                <InputLabel id="product-categories-label">
+                  Categories
+                </InputLabel>
+                <Select
+                  labelId="product-categories-label"
+                  id="product-categories-chip"
+                  multiple
+                  value={selectedCategories}
+                  onChange={(event) => {
+                    const {
+                      target: { value },
+                    } = event;
+                    setSelectedCategories(
+                      typeof value === "string" ? value.split(",") : value
+                    );
+                  }}
+                  input={
+                    <OutlinedInput id="product-categories-chip" label="Chip" />
+                  }
+                  renderValue={(selected) => (
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                      {selected.map((value) => (
+                        <Chip key={value} label={value} />
+                      ))}
+                    </Box>
+                  )}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        maxHeight: 48 * 4.5 + 8,
+                        width: 250,
+                      },
+                    },
+                  }}
+                >
+                  {categoriesData &&
+                    categoriesData.map((cat) => (
+                      <MenuItem key={cat._id} value={cat.name}>
+                        {cat.name}
+                      </MenuItem>
+                    ))}
+                </Select>
               </React.Fragment>
             ) : (
               <React.Fragment>
@@ -410,6 +498,7 @@ const Table = (props: TableProps) => {
         color="primary"
         aria-label="add"
         onClick={() => setModalOpen(true)}
+        disabled={!categoriesData && props.type === "products" ? true : false}
       >
         <AddIcon />
       </Fab>
