@@ -164,7 +164,6 @@ const Table = (props: TableProps) => {
       .then((res) => {
         setData(res);
         setDataLoading(false);
-        console.log(res);
       })
       .catch((error) => {
         setVariant("error");
